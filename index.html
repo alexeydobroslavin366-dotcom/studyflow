@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#f7f8fc">
+	<meta name="description" content="StudyFlow — планируй учебу, следи за прогрессом и успевай больше.">
+	<title>StudyFlow — учись эффективнее</title>
+	<style>
+		/* Базовые настройки и палитра */
+		:root {
+			--ink: #17233d;
+			--muted: #69758b;
+			--purple: #6d5ce7;
+			--purple-dark: #5847d1;
+			--blue: #55b6ee;
+			--pale: #f5f6fb;
+			--line: #e8eaf2;
+			--white: #fff;
+			--shadow: 0 18px 55px rgba(34, 43, 85, .09);
+			--radius: 22px;
+		}
+		* { box-sizing: border-box; }
+		html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+		body {
+			margin: 0;
+			color: var(--ink);
+			background: #fff;
+			font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			line-height: 1.6;
+			-webkit-font-smoothing: antialiased;
+		}
+		a { color: inherit; text-decoration: none; }
+		button, input { font: inherit; }
+		.container { width: min(1140px, calc(100% - 48px)); margin-inline: auto; }
+		.section { padding: 105px 0; }
+		.section-tint { background: var(--pale); }
+		.eyebrow {
+			display: inline-flex; align-items: center; gap: 8px;
+			color: var(--purple); font-size: .78rem; font-weight: 800;
+			letter-spacing: .12em; text-transform: uppercase;
+		}
+		.eyebrow::before { content: ""; width: 19px; height: 2px; background: currentColor; border-radius: 5px; }
+		.section-heading { max-width: 660px; margin: 0 auto 52px; text-align: center; }
+		.section-heading h2 { margin: 12px 0 13px; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.16; letter-spacing: -.045em; }
+		.section-heading p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+
+		/* Верхняя панель и навигация */
+		.site-header { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.9); border-bottom: 1px solid rgba(232,234,242,.8); backdrop-filter: blur(16px); }
+		.nav-wrap { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+		.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 850; letter-spacing: -.04em; white-space: nowrap; }
+		.brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: #fff; border-radius: 11px; background: linear-gradient(140deg, var(--purple), #8e7cf4); box-shadow: 0 6px 15px #6d5ce744; }
+		.brand-mark svg { width: 20px; height: 20px; }
+		.nav-links { display: flex; align-items: center; gap: clamp(15px, 2vw, 27px); margin: 0; padding: 0; list-style: none; }
+		.nav-links a { color: #566177; font-size: .88rem; font-weight: 650; transition: color .25s ease; }
+		.nav-links a:hover, .nav-links a:focus-visible { color: var(--purple); }
+		.nav-cta { flex: 0 0 auto; }
+		.menu-toggle { display: none; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 13px; background: #fff; color: var(--ink); cursor: pointer; }
+		.menu-toggle svg { width: 22px; height: 22px; }
+
+		/* Кнопки */
+		.btn { min-height: 49px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 22px; border: 1px solid transparent; border-radius: 13px; font-weight: 750; font-size: .94rem; cursor: pointer; transition: transform .25s ease, box-shadow .25s ease, background .25s ease, border-color .25s ease; }
+		.btn:hover { transform: translateY(-2px); }
+		.btn-primary { color: #fff; background: linear-gradient(135deg, var(--purple), #806df0); box-shadow: 0 10px 22px rgba(109,92,231,.23); }
+		.btn-primary:hover { background: linear-gradient(135deg, var(--purple-dark), #725fe6); box-shadow: 0 13px 27px rgba(109,92,231,.32); }
+		.btn-secondary { color: var(--ink); border-color: var(--line); background: rgba(255,255,255,.8); }
+		.btn-secondary:hover { border-color: #c9c2ff; box-shadow: 0 8px 20px rgba(23,35,61,.07); }
+		.btn svg { width: 17px; height: 17px; }
+
+		/* Первый экран */
+		.hero { position: relative; overflow: hidden; padding: 82px 0 94px; background: radial-gradient(ellipse at 81% 28%, #efedff 0, transparent 37%), linear-gradient(180deg, #fbfbff 0%, #fff 100%); }
+		.hero::before, .hero::after { position: absolute; content: ""; border: 1px solid rgba(109,92,231,.09); border-radius: 50%; pointer-events: none; }
+		.hero::before { width: 460px; height: 460px; top: -205px; right: -100px; }
+		.hero::after { width: 610px; height: 610px; top: -280px; right: -175px; }
+		.hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.04fr .96fr; align-items: center; gap: 42px; }
+		.hero-copy { padding: 18px 0; }
+		.hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; color: #5b50bb; background: #efedff; border: 1px solid #e4e0ff; border-radius: 99px; font-size: .78rem; font-weight: 750; }
+		.badge-dot { width: 7px; height: 7px; background: #7b6bed; border-radius: 50%; box-shadow: 0 0 0 4px #7b6bed20; }
+		h1 { max-width: 620px; margin: 22px 0 20px; font-size: clamp(3rem, 6vw, 4.65rem); line-height: 1.04; letter-spacing: -.065em; }
+		.gradient-text { color: var(--purple); background: linear-gradient(100deg, #6251dc, #41a9df); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+		.hero-copy > p { max-width: 515px; margin: 0; color: var(--muted); font-size: 1.12rem; }
+		.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+		.hero-note { display: flex; align-items: center; gap: 9px; margin-top: 20px; color: #7a8496; font-size: .82rem; }
+		.hero-note svg { width: 16px; height: 16px; color: #4cae8b; }
+		.hero-visual { min-height: 440px; display: grid; place-items: center; position: relative; }
+		.visual-orbit { position: absolute; width: min(100%, 455px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 50% 50%, #fff 0 43%, #f5f3ff 43.3% 62%, transparent 62.5%); border: 1px solid #e8e4ff; }
+		.dashboard { position: relative; width: min(100%, 420px); padding: 22px; border: 1px solid #eeedf6; border-radius: 23px; background: rgba(255,255,255,.94); box-shadow: 0 28px 70px rgba(44,42,100,.16); transform: rotate(-2deg); }
+		.dash-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 17px; border-bottom: 1px solid #f0eff6; }
+		.dash-title { font-size: .93rem; font-weight: 800; }
+		.dash-date { color: #9098a9; font-size: .7rem; }
+		.dash-avatar { width: 30px; height: 30px; display: grid; place-items: center; margin-left: auto; color: #fff; background: linear-gradient(135deg,#78c9ef,#6659df); border-radius: 50%; font-size: .68rem; font-weight: 800; }
+		.dash-summary { display: flex; justify-content: space-between; align-items: center; padding: 18px 0 16px; }
+		.dash-summary small, .task-text small { display: block; color: #8c95a7; font-size: .68rem; }
+		.dash-summary strong { display: block; margin-top: 2px; font-size: 1.2rem; }
+		.progress-ring { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(var(--purple) 0 72%, #eeecfb 72%); position: relative; }
+		.progress-ring::before { content: ""; position: absolute; inset: 5px; background: white; border-radius: inherit; }
+		.progress-ring span { position: relative; font-size: .63rem; font-weight: 800; }
+		.dash-label { margin: 2px 0 9px; font-size: .77rem; font-weight: 800; }
+		.task-row { display: flex; align-items: center; gap: 10px; padding: 10px 11px; margin-top: 7px; border: 1px solid #f0eff6; border-radius: 12px; }
+		.task-check { flex: 0 0 17px; height: 17px; border: 1.5px solid #d8d7e5; border-radius: 5px; }
+		.task-check.done { display: grid; place-items: center; color: #fff; border-color: #71c8a4; background: #71c8a4; font-size: .65rem; }
+		.task-text { flex: 1; min-width: 0; font-size: .73rem; font-weight: 700; }
+		.task-time { color: #8b92a4; font-size: .66rem; white-space: nowrap; }
+		.dash-bottom { display: flex; align-items: center; gap: 8px; margin-top: 15px; padding: 11px; color: #6152c7; background: #f5f3ff; border-radius: 11px; font-size: .71rem; font-weight: 700; }
+		.dash-bottom svg { width: 16px; height: 16px; }
+		.float-card { position: absolute; display: flex; align-items: center; gap: 10px; padding: 12px 15px; background: #fff; border: 1px solid #f0eff6; border-radius: 15px; box-shadow: 0 14px 35px rgba(44,42,100,.13); animation: float 5s ease-in-out infinite; }
+		.float-card.one { top: 48px; right: -4px; }
+		.float-card.two { bottom: 42px; left: -8px; animation-delay: -2.2s; }
+		.float-icon { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 11px; background: #e9f8f2; color: #41ae83; font-size: 1rem; }
+		.float-card.two .float-icon { color: #6d5ce7; background: #f0edff; }
+		.float-card strong { display: block; font-size: .77rem; }
+		.float-card small { display: block; color: #8b92a4; font-size: .65rem; }
+		@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
+		/* Возможности */
+		.features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+		.feature-card { min-height: 245px; padding: 25px 22px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+		.feature-card:hover { transform: translateY(-7px); border-color: #d8d2ff; box-shadow: var(--shadow); }
+		.icon-box { width: 49px; height: 49px; display: grid; place-items: center; margin-bottom: 21px; color: var(--purple); background: #f0edff; border-radius: 15px; }
+		.feature-card:nth-child(2) .icon-box { color: #1898ca; background: #e8f7ff; }
+		.feature-card:nth-child(3) .icon-box { color: #36a77a; background: #e9f8f1; }
+		.feature-card:nth-child(4) .icon-box { color: #e39a35; background: #fff5e8; }
+		.icon-box svg { width: 24px; height: 24px; }
+		.feature-card h3 { margin: 0 0 9px; font-size: 1.06rem; letter-spacing: -.02em; }
+		.feature-card p { margin: 0; color: var(--muted); font-size: .89rem; }
+
+		/* Последовательность шагов */
+		.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; position: relative; }
+		.step { position: relative; padding: 25px 22px 20px; border-radius: 18px; background: #fff; border: 1px solid var(--line); }
+		.step:not(:last-child)::after { content: ""; position: absolute; top: 47px; left: calc(100% + 1px); width: 23px; border-top: 1px dashed #b9b1f2; z-index: 2; }
+		.step-num { width: 45px; height: 45px; display: grid; place-items: center; color: var(--purple); background: #f0edff; border-radius: 14px; font-weight: 850; font-size: .83rem; }
+		.step h3 { margin: 20px 0 8px; font-size: 1.02rem; }
+		.step p { margin: 0; color: var(--muted); font-size: .87rem; }
+
+		/* Преимущества и демонстрационные показатели */
+		.benefits-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 70px; }
+		.benefits-copy h2 { max-width: 510px; margin: 14px 0 16px; font-size: clamp(2rem, 4vw, 2.7rem); line-height: 1.15; letter-spacing: -.045em; }
+		.benefits-copy > p { max-width: 500px; margin: 0; color: var(--muted); }
+		.benefit-list { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin: 27px 0 0; padding: 0; list-style: none; }
+		.benefit-list li { display: flex; align-items: center; gap: 9px; color: #465269; font-size: .88rem; font-weight: 650; }
+		.check { flex: 0 0 20px; width: 20px; height: 20px; display: grid; place-items: center; color: #34a77d; background: #e9f8f1; border-radius: 50%; font-size: .72rem; font-weight: 900; }
+		.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+		.stat-card { min-height: 160px; padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 9px 28px rgba(34,43,85,.04); }
+		.stat-card:nth-child(2) { background: linear-gradient(145deg, #f1efff, #faf9ff); }
+		.stat-card:nth-child(3) { background: linear-gradient(145deg, #eaf8ff, #f9fdff); }
+		.stat-card:nth-child(4) { background: linear-gradient(145deg, #edf9f3, #fbfefc); }
+		.stat-card strong { display: block; color: var(--purple); font-size: 2.25rem; line-height: 1.1; letter-spacing: -.06em; }
+		.stat-card:nth-child(3) strong { color: #309cc9; }
+		.stat-card:nth-child(4) strong { color: #31a77c; }
+		.stat-card p { margin: 10px 0 0; color: var(--muted); font-size: .85rem; }
+		.demo-note { margin-top: 13px; color: #939bad; font-size: .72rem; text-align: right; }
+
+		/* Отзывы */
+		.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+		.review-card { padding: 26px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; transition: transform .3s ease, box-shadow .3s ease; }
+		.review-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+		.stars { display: flex; gap: 3px; color: #f4ad4e; font-size: .98rem; letter-spacing: .06em; }
+		.review-card blockquote { min-height: 105px; margin: 17px 0 22px; color: #465269; font-size: .96rem; line-height: 1.7; }
+		.review-person { display: flex; align-items: center; gap: 11px; padding-top: 17px; border-top: 1px solid #f0f1f5; }
+		.person-avatar { width: 40px; height: 40px; display: grid; place-items: center; color: #6253c8; background: #efedff; border-radius: 50%; font-size: .78rem; font-weight: 850; }
+		.review-card:nth-child(2) .person-avatar { color: #168eb8; background: #e8f7ff; }
+		.review-card:nth-child(3) .person-avatar { color: #29986e; background: #e8f7ef; }
+		.review-person strong { display: block; font-size: .85rem; }
+		.review-person small { display: block; color: #8992a4; font-size: .74rem; }
+
+		/* Форма регистрации / Контакты */
+		.signup-section { padding: 80px 0 100px; background: linear-gradient(180deg, #f5f6fb 0%, #fff 100%); }
+		.signup-container { max-width: 580px; margin: 0 auto; padding: 40px; background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); }
+		.form-group { margin-bottom: 20px; text-align: left; }
+		.form-group label { display: block; margin-bottom: 8px; color: var(--ink); font-size: .9rem; font-weight: 700; }
+		.form-input { width: 100%; padding: 14px 18px; border: 1.5px solid var(--line); border-radius: 12px; font-size: .95rem; outline: none; transition: border-color .2s; }
+		.form-input:focus { border-color: var(--purple); }
+		.form-error { display: none; margin-top: 5px; color: #e74c3c; font-size: .8rem; }
+		.form-group.error .form-input { border-color: #e74c3c; }
+		.form-group.error .form-error { display: block; }
+		.signup-btn { width: 100%; margin-top: 10px; }
+
+		/* Финальный призыв */
+		.cta-section { padding: 37px 0 105px; }
+		.cta-panel { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 53px 62px; color: #fff; border-radius: 28px; background: linear-gradient(115deg, #5b4bd0, #7865e9 55%, #48a9dc); box-shadow: 0 25px 55px rgba(91,75,208,.2); }
+		.cta-panel::before, .cta-panel::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.17); border-radius: 50%; pointer-events: none; }
+		.cta-panel::before { width: 330px; height: 330px; top: -210px; right: 16%; }
+		.cta-panel::after { width: 430px; height: 430px; bottom: -330px; right: -10px; }
+		.cta-copy, .cta-panel .btn { position: relative; z-index: 1; }
+		.cta-copy h2 { margin: 0 0 9px; font-size: clamp(1.8rem, 4vw, 2.45rem); line-height: 1.18; letter-spacing: -.045em; }
+		.cta-copy p { margin: 0; color: rgba(255,255,255,.82); }
+		.cta-panel .btn { flex: 0 0 auto; color: #5c4bcf; background: #fff; box-shadow: 0 8px 24px #34279b35; }
+		.cta-panel .btn:hover { background: #f6f4ff; }
+
+		/* Подвал */
+		.site-footer { padding: 55px 0 22px; background: #171d32; color: #fff; }
+		.footer-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 48px; padding-bottom: 42px; }
+		.footer-brand .brand { color: #fff; }
+		.footer-brand p { max-width: 330px; margin: 15px 0 0; color: #aab1c3; font-size: .87rem; }
+		.footer-title { margin: 3px 0 15px; font-size: .86rem; font-weight: 800; }
+		.footer-links { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+		.footer-links a { color: #aab1c3; font-size: .83rem; transition: color .2s ease; }
+		.footer-links a:hover { color: #fff; }
+		.footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 20px; border-top: 1px solid #30364a; color: #929aaf; font-size: .76rem; }
+		.legal-links { display: flex; flex-wrap: wrap; gap: 20px; }
+		.legal-links a:hover { color: #fff; }
+
+		/* Уведомление об условном старте регистрации */
+		.toast { position: fixed; right: 24px; bottom: 24px; z-index: 50; max-width: min(390px, calc(100% - 32px)); padding: 15px 19px; color: #fff; background: #202943; border: 1px solid #39435f; border-radius: 14px; box-shadow: 0 15px 40px #10172d40; opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity .25s ease, transform .25s ease; font-size: .9rem; }
+		.toast.show { opacity: 1; transform: translateY(0); }
+		:focus-visible { outline: 3px solid #8d80f4; outline-offset: 3px; }
+
+		/* Планшеты и телефоны */
+		@media (max-width: 980px) {
+			.nav-links { gap: 13px; }
+			.nav-links a { font-size: .79rem; }
+			.nav-cta { padding-inline: 15px; font-size: .83rem; }
+			.hero-grid { gap: 20px; }
+			.features-grid { grid-template-columns: repeat(2, 1fr); }
+			.benefits-layout { gap: 35px; }
+			.steps-grid { gap: 16px; }
+			.step { padding-inline: 17px; }
+			.step:not(:last-child)::after { width: 15px; }
+		}
+		@media (max-width: 760px) {
+			.container { width: min(100% - 36px, 560px); }
+			.section { padding: 78px 0; }
+			.nav-wrap { min-height: 68px; }
+			.menu-toggle { display: grid; place-items: center; margin-left: auto; }
+			.nav-cta { display: none; }
+			.nav-links { position: absolute; top: calc(100% + 1px); left: 0; right: 0; display: none; align-items: stretch; gap: 0; padding: 9px 18px 16px; background: #fff; border-bottom: 1px solid var(--line); box-shadow: 0 15px 20px #17233d0d; }
+			.nav-links.open { display: flex; flex-direction: column; }
+			.nav-links li a { display: block; padding: 11px 7px; font-size: .94rem; }
+			.hero { padding: 55px 0 62px; }
+			.hero-grid { grid-template-columns: 1fr; gap: 20px; }
+			.hero-copy { text-align: center; }
+			.hero-copy > p { margin-inline: auto; }
+			.hero-actions, .hero-note { justify-content: center; }
+			h1 { margin-inline: auto; font-size: clamp(2.8rem, 11vw, 4rem); }
+			.hero-visual { min-height: 390px; }
+			.dashboard { width: min(100% - 20px, 420px); }
+			.visual-orbit { width: min(100%, 390px); }
+			.float-card.one { right: -3px; }
+			.float-card.two { left: -3px; }
+			.steps-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+			.step:not(:last-child)::after { display: none; }
+			.benefits-layout { grid-template-columns: 1fr; gap: 34px; }
+			.reviews-grid { grid-template-columns: 1fr; }
+			.review-card blockquote { min-height: 0; }
+			.cta-section { padding: 10px 0 78px; }
+			.cta-panel { align-items: flex-start; flex-direction: column; padding: 38px 30px; }
+			.footer-top { grid-template-columns: 1fr 1fr; gap: 30px; }
+			.footer-brand { grid-column: 1 / -1; }
+		}
+		@media (max-width: 480px) {
+			.container { width: calc(100% - 32px); }
+			.section-heading { margin-bottom: 34px; }
+			.section-heading h2 { font-size: 2rem; }
+			.hero-badge { font-size: .7rem; }
+			h1 { font-size: 2.8rem; }
+			.hero-copy > p { font-size: 1rem; }
+			.hero-actions { flex-direction: column; }
+			.hero-actions .btn { width: 100%; }
+			.hero-visual { min-height: 350px; }
+			.dashboard { padding: 16px; }
+			.float-card { padding: 9px 11px; }
+			.float-card.one { top: 24px; }
+			.float-card.two { bottom: 20px; }
+			.features-grid, .steps-grid { grid-template-columns: 1fr; }
+			.feature-card { min-height: auto; }
+			.benefit-list { grid-template-columns: 1fr; }
+			.stats-grid { gap: 10px; }
+			.stat-card { min-height: 140px; padding: 18px; }
+			.stat-card strong { font-size: 1.9rem; }
+			.cta-panel { padding: 32px 23px; }
+			.cta-panel .btn { width: 100%; }
+			.footer-top { grid-template-columns: 1fr 1fr; gap: 23px 14px; }
+			.footer-bottom { align-items: flex-start; flex-direction: column; }
+			.signup-container { padding: 25px 18px; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+		}
+	</style>
+</head>
+<body>
+	<!-- Шапка сайта: логотип, навигация и мобильная кнопка меню -->
+	<header class="site-header">
+		<div class="container nav-wrap">
+			<a class="brand" href="#home" aria-label="StudyFlow — на главную">
+				<span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 17.5 10 6l3.1 7 2-4 3.9 8.5M7 17.5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+				<span>StudyFlow</span>
+			</a>
+			<button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="primary-nav">
+				<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+			</button>
+			<nav aria-label="Основная навигация">
+				<ul class="nav-links" id="primary-nav">
+					<li><a href="#home">Главная</a></li>
+					<li><a href="#features">Возможности</a></li>
+					<li><a href="#how-it-works">Как это работает</a></li>
+					<li><a href="#benefits">Преимущества</a></li>
+					<li><a href="#reviews">Отзывы</a></li>
+					<li><a href="#start">Начать</a></li>
+				</ul>
+			</nav>
+			<button class="btn btn-primary nav-cta" type="button" data-start>Попробовать бесплатно</button>
+		</div>
+	</header>
+
+	<main>
+		<!-- Hero-блок сразу объясняет пользу сервиса -->
+		<section class="hero" id="home" aria-labelledby="hero-title">
+			<div class="container hero-grid">
+				<div class="hero-copy">
+					<span class="hero-badge"><span class="badge-dot"></span> Твой учебный ритм — под контролем</span>
+					<h1 id="hero-title">Учись эффективнее. <span class="gradient-text">Успевай больше.</span></h1>
+					<p>StudyFlow помогает собрать учебные задачи в одном месте, спланировать неделю и видеть свой прогресс — без лишнего стресса.</p>
+					<div class="hero-actions">
+						<button class="btn btn-primary" type="button" data-start>Начать бесплатно <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+						<a class="btn btn-secondary" href="#features">Узнать больше</a>
+					</div>
+					<div class="hero-note"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 10 3.2 3.2L15.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Бесплатно для старта · Никакой сложной настройки</div>
+				</div>
+				<div class="hero-visual" aria-label="Пример панели планирования StudyFlow">
+					<div class="visual-orbit" aria-hidden="true"></div>
+					<div class="dashboard">
+						<div class="dash-top"><div><div class="dash-title">Моя неделя</div><div class="dash-date">Понедельник, 12 мая</div></div><div class="dash-avatar" aria-label="Профиль студента">А</div></div>
+						<div class="dash-summary"><div><small>Задачи на сегодня</small><strong>4 из 6 выполнено</strong></div><div class="progress-ring"><span>72%</span></div></div>
+						<div class="dash-label">План на сегодня</div>
+						<div class="task-row"><span class="task-check done" aria-hidden="true">✓</span><span class="task-text">Лекция по биологии<small>Конспект · 30 минут</small></span><span class="task-time">09:00</span></div>
+						<div class="task-row"><span class="task-check" aria-hidden="true"></span><span class="task-text">Подготовить доклад<small>История · 1 час</small></span><span class="task-time">12:30</span></div>
+						<div class="task-row"><span class="task-check done" aria-hidden="true">✓</span><span class="task-text">Решить задачи<small>Математика · 45 минут</small></span><span class="task-time">15:00</span></div>
+						<div class="dash-bottom"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v2m0 14v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M3 12h2m14 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> Отличный темп! Ты на верном пути.</div>
+					</div>
+					<div class="float-card one"><span class="float-icon">✓</span><span><strong>Задача выполнена</strong><small>Ты молодец!</small></span></div>
+					<div class="float-card two"><span class="float-icon">↗</span><span><strong>Прогресс растёт</strong><small>+12% за неделю</small></span></div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Карточки ключевых возможностей сервиса -->
+		<section class="section" id="features" aria-labelledby="features-title">
+			<div class="container">
+				<div class="section-heading"><span class="eyebrow">Возможности</span><h2 id="features-title">Всё необходимое для эффективной учебы</h2><p>Меньше хаоса в делах — больше времени на то, что действительно важно.</p></div>
+				<div class="features-grid">
+					<article class="feature-card"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 3v4m8-4v4M4 10h16m-11 4h2m3 0h2m-7 4h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><h3>Планирование</h3><p>Создавай учебный план и распределяй задачи по дням, чтобы двигаться к целям без спешки.</p></article>
+					<article class="feature-card"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 13.8 8.2 19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z" fill="currentColor"/></svg></div><h3>Умный помощник</h3><p>Получай идеи и рекомендации, которые помогают организовать обучение и разбить большую цель на шаги.</p></article>
+					<article class="feature-card"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h17M8 15l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 6h3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Отслеживание прогресса</h3><p>Отмечай выполненное, наблюдай за результатами и замечай, как маленькие шаги складываются в успех.</p></article>
+					<article class="feature-card"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Напоминания</h3><p>Не упускай важные задачи и держи дедлайны под контролем с мягкими своевременными напоминаниями.</p></article>
+				</div>
+			</div>
+		</section>
+
+		<!-- Четыре понятных шага использования сервиса -->
+		<section class="section section-tint" id="how-it-works" aria-labelledby="steps-title">
+			<div class="container">
+				<div class="section-heading"><span class="eyebrow">Как это работает</span><h2 id="steps-title">Учебный план — в нескольких шагах</h2><p>Начать просто. StudyFlow поможет превратить планы в привычку.</p></div>
+				<div class="steps-grid">
+					<article class="step"><div class="step-num">01</div><h3>Создай план</h3><p>Добавь учебные цели, предметы и задачи, которые хочешь выполнить.</p></article>
+					<article class="step"><div class="step-num">02</div><h3>Организуй время</h3><p>Распредели дела по дням и найди комфортный темп для каждой задачи.</p></article>
+					<article class="step"><div class="step-num">03</div><h3>Выполняй задачи</h3><p>Отмечай задания по мере выполнения и освобождай место для новых идей.</p></article>
+					<article class="step"><div class="step-num">04</div><h3>Следи за результатом</h3><p>Смотри на свой прогресс и сохраняй мотивацию продолжать.</p></article>
+				</div>
+			</div>
+		</section>
+
+		<!-- Преимущества и примеры показателей -->
+		<section class="section" id="benefits" aria-labelledby="benefits-title">
+			<div class="container benefits-layout">
+				<div class="benefits-copy"><span class="eyebrow">Преимущества</span><h2 id="benefits-title">Больше ясности. Меньше учебного стресса.</h2><p>Собери учебные дела в удобную систему, которая подстраивается под твой ритм и помогает не терять фокус.</p>
+					<ul class="benefit-list"><li><span class="check">✓</span> Экономия времени</li><li><span class="check">✓</span> Контроль дедлайнов</li><li><span class="check">✓</span> Удобная организация</li><li><span class="check">✓</span> Доступ с любого устройства</li><li><span class="check">✓</span> Понятный интерфейс</li><li><span class="check">✓</span> Подход под твои цели</li></ul>
+				</div>
+				<div><div class="stats-grid">
+					<article class="stat-card"><strong>85%</strong><p>студентов выполняют задачи вовремя</p></article>
+					<article class="stat-card"><strong>24/7</strong><p>доступ к учебному плану</p></article>
+					<article class="stat-card"><strong>1 место</strong><p>для всех учебных задач</p></article>
+					<article class="stat-card"><strong>∞</strong><p>возможностей для новых целей</p></article>
+				</div><div class="demo-note">Показатели приведены для примера и не являются реальной статистикой.</div></div>
+			</div>
+		</section>
+
+		<!-- Отзывы студентов -->
+		<section class="section section-tint" id="reviews" aria-labelledby="reviews-title">
+			<div class="container">
+				<div class="section-heading"><span class="eyebrow">Отзывы</span><h2 id="reviews-title">Что говорят студенты</h2><p>Учиться в своём ритме — проще, когда всё под рукой.</p></div>
+				<div class="reviews-grid">
+					<article class="review-card"><div class="stars" aria-label="5 из 5 звезд">★★★★★</div><blockquote>«StudyFlow помог мне перестать откладывать учебные задачи и нормально планировать неделю.»</blockquote><div class="review-person"><div class="person-avatar" aria-hidden="true">МВ</div><div><strong>Мария Волкова</strong><small>Психология, 2 курс</small></div></div></article>
+					<article class="review-card"><div class="stars" aria-label="5 из 5 звезд">★★★★★</div><blockquote>«Теперь все дедлайны и задания находятся в одном месте. Наконец-то ничего не теряется среди заметок!»</blockquote><div class="review-person"><div class="person-avatar" aria-hidden="true">АК</div><div><strong>Артём Кузнецов</strong><small>Информатика, 3 курс</small></div></div></article>
+					<article class="review-card"><div class="stars" aria-label="5 из 5 звезд">★★★★★</div><blockquote>«Очень удобный сервис для студентов. Особенно нравится отслеживание прогресса — мотивирует двигаться дальше.»</blockquote><div class="review-person"><div class="person-avatar" aria-hidden="true">ДС</div><div><strong>Дарья Смирнова</strong><small>Дизайн, 1 курс</small></div></div></article>
+				</div>
+			</div>
+		</section>
+
+		<!-- CTA с сообщением о скором запуске -->
+		<section class="cta-section" id="start" aria-labelledby="cta-title">
+			<div class="container"><div class="cta-panel"><div class="cta-copy"><h2 id="cta-title">Готов сделать учебу проще?</h2><p>Начни использовать StudyFlow уже сегодня и двигайся к своим целям.</p></div><button class="btn" type="button" data-start>Начать бесплатно <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+		</section>
+	</main>
+
+	<!-- Подвал со ссылками на разделы и служебные страницы -->
+	<footer class="site-footer">
+		<div class="container">
+			<div class="footer-top">
+				<div class="footer-brand"><a class="brand" href="#home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 17.5 10 6l3.1 7 2-4 3.9 8.5M7 17.5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>StudyFlow</span></a><p>Твой спокойный и понятный способ организовать учебу, видеть прогресс и успевать больше.</p></div>
+				<div><h2 class="footer-title">Навигация</h2><ul class="footer-links"><li><a href="#features">Возможности</a></li><li><a href="#how-it-works">Как это работает</a></li><li><a href="#benefits">Преимущества</a></li><li><a href="#reviews">Отзывы</a></li></ul></div>
+				<div><h2 class="footer-title">Начни сегодня</h2><ul class="footer-links"><li><a href="#start">Попробовать бесплатно</a></li><li><a href="#home">О StudyFlow</a></li><li><a href="#start">Связаться с нами</a></li></ul></div>
+			</div>
+			<div class="footer-bottom"><span>© 2026 StudyFlow. Все права защищены.</span><div class="legal-links"><a href="#privacy" data-legal>Политика конфиденциальности</a><a href="#terms" data-legal>Условия использования</a></div></div>
+		</div>
+	</footer>
+
+	<div class="toast" id="toast" role="status" aria-live="polite">Отлично! Регистрация в StudyFlow скоро будет доступна.</div>
+
+	<script>
+		// Мобильное меню открывается по кнопке и закрывается после выбора раздела.
+		const menuButton = document.querySelector('.menu-toggle');
+		const navLinks = document.querySelector('.nav-links');
+		menuButton.addEventListener('click', () => {
+			const isOpen = navLinks.classList.toggle('open');
+			menuButton.setAttribute('aria-expanded', String(isOpen));
+			menuButton.setAttribute('aria-label', isOpen ? 'Закрыть меню' : 'Открыть меню');
+		});
+		navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+			navLinks.classList.remove('open');
+			menuButton.setAttribute('aria-expanded', 'false');
+			menuButton.setAttribute('aria-label', 'Открыть меню');
+		}));
+
+		// Все кнопки старта показывают короткое уведомление вместо несуществующей регистрации.
+		const toast = document.getElementById('toast');
+		let toastTimer;
+		document.querySelectorAll('[data-start]').forEach(button => button.addEventListener('click', () => {
+			toast.classList.add('show');
+			clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => toast.classList.remove('show'), 3800);
+		}));
+		document.querySelectorAll('[data-legal]').forEach(link => link.addEventListener('click', event => {
+			event.preventDefault();
+			toast.textContent = 'Информация появится вместе с запуском StudyFlow.';
+			toast.classList.add('show');
+			clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => {
+				toast.classList.remove('show');
+				toast.textContent = 'Отлично! Регистрация в StudyFlow скоро будет доступна.';
+			}, 3200);
+		}));
+	</script>
+</body>
+</html>

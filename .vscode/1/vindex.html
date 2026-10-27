@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="StudyFlow — умный цифровой помощник для студентов. Планируй задачи, контролируй дедлайны и достигай целей.">
+    <meta name="theme-color" content="#4F46E5">
+    <title>StudyFlow — Учись эффективнее. Успевай больше.</title>
+    <!-- Google Fonts для современной типографики -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. СБРОС СТИЛЕЙ И ПЕРЕМЕННЫЕ (CSS VARIABLES)
+           ========================================================================== */
+        :root {
+            /* Цветовая палитра */
+            --primary: #4F46E5;          /* Индиго / Фиолетово-синий */
+            --primary-hover: #4338CA;    /* Тёмный индиго для ховера */
+            --primary-light: #EEF2FF;    /* Светло-голубой/фиолетовый фон */
+            --accent: #06B6D4;           /* Голубой / Циан */
+            --accent-glow: rgba(6, 182, 212, 0.25);
+            
+            --bg-main: #FAFAFC;          /* Основной светлый фон */
+            --bg-card: #FFFFFF;          /* Фон карточек */
+            --bg-secondary: #F3F4F6;     /* Дополнительный серый фон */
+            
+            --text-main: #1E293B;        /* Тёмно-серый/синий текст */
+            --text-muted: #475569;      /* Приглушенный серый текст */
+            --text-white: #FFFFFF;
+            
+            --border-color: #E2E8F0;     /* Цвет границ */
+            
+            /* Градиенты */
+            --grad-primary: linear-gradient(135deg, #6366F1 0%, #3B82F6 100%);
+            --grad-accent: linear-gradient(135deg, #4F46E5 0%, #06B6D4 100%);
+            --grad-surface: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+            
+            /* Тени */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 25px -5px rgba(79, 70, 229, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 20px 25px -5px rgba(79, 70, 229, 0.18), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* Радиусы скругления */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+            
+            /* Анимации */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+        }
+
+        /* Базовый сброс параметров */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px; /* Отступ для якорной навигации: фиксированная шапка не перекрывает заголовки секций */
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden; /* Защита от горизонтального скролла */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color var(--transition-fast);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Вспомогательные классы контейнера */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto 60px auto;
+        }
+
+        .section-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-radius: var(--radius-full);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.25;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            border: none;
+            outline: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--grad-primary);
+            color: var(--text-white);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+            opacity: 0.95;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ==========================================================================
+           2. HEADER / НАВИГАЦИЯ
+           ========================================================================== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(250, 250, 252, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all var(--transition-normal);
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--grad-accent);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width var(--transition-normal);
+            border-radius: var(--radius-full);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Бургер-меню для мобильных */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 28px;
+            height: 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2.5px;
+            background-color: var(--text-main);
+            border-radius: 2px;
+            transition: all var(--transition-normal);
+        }
+
+        /* ==========================================================================
+           3. HERO-БЛОК
+           ========================================================================== */
+        .hero {
+            padding-top: 160px;
+            padding-bottom: 100px;
+            background: radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 10% 60%, rgba(79, 70, 229, 0.08) 0%, transparent 40%);
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 560px;
+        }
+
+        .hero-title {
+            font-size: 3.25rem;
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-title .gradient-text {
+            background: var(--grad-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 36px;
+            line-height: 1.6;
+        }
+
+        .hero-btns {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Визуальная часть Hero (Карточка-макет сервиса) */
+        .hero-visual {
+            position: relative;
+        }
+
+        .dashboard-mockup {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            padding: 24px;
+            position: relative;
+            z-index: 2;
+            transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+            transition: transform var(--transition-normal);
+        }
+
+        .dashboard-mockup:hover {
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+        }
+
+        .mockup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mockup-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #EF4444; }
+        .dot-yellow { background-color: #F59E0B; }
+        .dot-green { background-color: #10B981; }
+
+        .mockup-body {
+            display: grid;
+            gap: 16px;
+        }
+
+        .mockup-card {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 4px solid var(--primary);
+        }
+
+        .mockup-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .mockup-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .mockup-status {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
+
+        /* Декоративные плавающие карточки */
+        .float-card {
+            position: absolute;
+            background: var(--bg-card);
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-hover);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .float-card-1 {
+            top: -20px;
+            right: -20px;
+            animation-delay: 0s;
+        }
+
+        .float-card-2 {
+            bottom: -20px;
+            left: -20px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ==========================================================================
+           4. БЛОК «ВОЗМОЖНОСТИ»
+           ========================================================================== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px 24px;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            transition: all var(--transition-normal);
+        }
+
+        .feature-card:hover .feature-icon {
+            background: var(--grad-primary);
+            color: var(--text-white);
+            transform: scale(1.05);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .feature-list li {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-list li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* ==========================================================================
+           5. БЛОК «КАК ЭТО РАБОТАЕТ»
+           ========================================================================== */
+        .how-it-works {
+            background-color: #F8FAFC;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            padding: 32px 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            position: relative;
+            z-index: 1;
+            transition: transform var(--transition-normal);
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--grad-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .step-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Линия-соединитель для больших экранов */
+        .steps-connector {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: dashed #CBD5E1;
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+
+        /* ==========================================================================
+           6. БЛОК «ПРЕИМУЩЕСТВА»
+           ========================================================================== */
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: var(--grad-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 36px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .advantages-list-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .adv-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        .adv-icon {
+            color: #10B981;
+            font-size: 1.2rem;
+        }
+
+        /* ==========================================================================
+           7. БЛОК С ОТЗЫВАМИ
+           ========================================================================== */
+        .reviews {
+            background-color: #F8FAFC;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .review-text {
+            font-size: 0.975rem;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--grad-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .author-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .author-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================================================
+           8. CTA-БЛОК
+           ========================================================================== */
+        .cta-section {
+            padding: 80px 0;
+        }
+
+        .cta-box {
+            background: var(--grad-accent);
+            border-radius: var(--radius-lg);
+            padding: 60px 40px;
+            text-align: center;
+            color: var(--text-white);
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .cta-subtitle {
+            font-size: 1.15rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-box .btn-primary {
+            background: var(--bg-card);
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-box .btn-primary:hover {
+            background: #F8FAFC;
+            color: var(--primary-hover);
+        }
+
+        /* ==========================================================================
+           9. FOOTER
+           ========================================================================== */
+        .footer {
+            background-color: #0F172A;
+            color: #94A3B8;
+            padding: 80px 0 40px 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand .logo {
+            color: var(--text-white);
+            margin-bottom: 16px;
+        }
+
+        .footer-desc {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 320px;
+        }
+
+        .footer-title {
+            color: var(--text-white);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-white);
+        }
+
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid #1E293B;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        /* ==========================================================================
+           10. УВЕДОМЛЕНИЕ (TOAST / MODAL)
+           ========================================================================== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--text-main);
+            color: var(--text-white);
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-hover);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .toast-icon {
+            color: #10B981;
+            font-size: 1.2rem;
+        }
+
+        /* ==========================================================================
+           11. АДАПТИВНОСТЬ (MEDIA QUERIES)
+           ========================================================================== */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .steps-connector {
+                display: none;
+            }
+            .advantages-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .advantages-list-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 60px 0;
+            }
+            
+            /* Мобильная навигация */
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-card);
+                flex-direction: column;
+                padding: 30px;
+                gap: 20px;
+                box-shadow: var(--shadow-lg);
+                border-bottom: 1px solid var(--border-color);
+                transform: translateY(-150%);
+                transition: transform var(--transition-normal);
+            }
+
+            .nav-menu.active {
+                transform: translateY(0);
+            }
+
+            .header-actions .btn {
+                display: none; /* Скрываем кнопку в хедере на мобильных для чистоты */
+            }
+
+            /* Hero блок */
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .hero-content {
+                margin: 0 auto;
+            }
+
+            .hero-btns {
+                justify-content: center;
+            }
+
+            .dashboard-mockup {
+                transform: none;
+            }
+
+            /* Карточки и сетки */
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .advantages-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .advantages-list-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .cta-box {
+                padding: 40px 20px;
+            }
+
+            .cta-title {
+                font-size: 1.75rem;
+            }
+
+            .float-card {
+                display: none; /* Скрываем плавающие карточки на совсем маленьких экранах */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================================
+       1. HEADER / НАВИГАЦИЯ
+       ========================================================================== -->
+    <header class="header">
+        <div class="container header-container">
+            <!-- Логотип -->
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <!-- SVG иконка молнии/потока -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </div>
+                <span>StudyFlow</span>
+            </a>
+
+            <!-- Навигационное меню -->
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#hero" class="nav-link">Главная</a></li>
+                    <li><a href="#features" class="nav-link">Возможности</a></li>
+                    <li><a href="#how-it-works" class="nav-link">Как это работает</a></li>
+                    <li><a href="#advantages" class="nav-link">Преимущества</a></li>
+                    <li><a href="#reviews" class="nav-link">Отзывы</a></li>
+                </ul>
+            </nav>
+
+            <!-- Кнопки действия -->
+            <div class="header-actions">
+                <button class="btn btn-primary js-start-btn">Попробовать бесплатно</button>
+                <button class="hamburger" id="hamburgerBtn" aria-label="Открыть меню">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ==========================================================================
+           2. HERO-БЛОК
+           ========================================================================== -->
+        <section class="hero" id="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <h1 class="hero-title">Учись эффективнее. <br><span class="gradient-text">Успевай больше.</span></h1>
+                    <p class="hero-description">
+                        StudyFlow — умный цифровой помощник для студентов. Организуй учебный процесс, планируй задачи и отслеживай прогресс в одном удобном интерфейсе.
+                    </p>
+                    <div class="hero-btns">
+                        <button class="btn btn-primary js-start-btn">Начать бесплатно</button>
+                        <a href="#how-it-works" class="btn btn-secondary">Узнать больше</a>
+                    </div>
+                </div>
+
+                <!-- Интерактивный макет интерфейса -->
+                <div class="hero-visual">
+                    <div class="dashboard-mockup">
+                        <div class="mockup-header">
+                            <div class="mockup-dots">
+                                <span class="dot dot-red"></span>
+                                <span class="dot dot-yellow"></span>
+                                <span class="dot dot-green"></span>
+                            </div>
+                            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Дашборд студента</span>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-card">
+                                <div class="mockup-info">
+                                    <h4>Курсовая работа по экономике</h4>
+                                    <p>Дедлайн: Завтра, 18:00</p>
+                                </div>
+                                <span class="mockup-status">В процессе</span>
+                            </div>
+                            <div class="mockup-card" style="border-left-color: var(--accent);">
+                                <div class="mockup-info">
+                                    <h4>Подготовка к семинару</h4>
+                                    <p>Выполнено 4 из 5 задач</p>
+                                </div>
+                                <span class="mockup-status">80%</span>
+                            </div>
+                            <div class="mockup-card" style="border-left-color: #10B981;">
+                                <div class="mockup-info">
+                                    <h4>Лабораторная №3</h4>
+                                    <p>Проверено преподавателем</p>
+                                </div>
+                                <span class="mockup-status" style="background: rgba(16,185,129,0.1); color:#10B981;">Готово</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Декоративные всплывающие карточки -->
+                    <div class="float-card float-card-1">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 700;">+25% к продуктивности</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">На этой неделе</div>
+                        </div>
+                    </div>
+
+                    <div class="float-card float-card-2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 700;">Напоминание</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Лекция через 15 мин</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           3. БЛОК «ВОЗМОЖНОСТИ»
+           ========================================================================== -->
+        <section class="section" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-badge">Возможности</span>
+                    <h2 class="section-title">Всё необходимое для эффективной учебы</h2>
+                    <p class="section-subtitle">Современный набор инструментов, разработанный специально для решения ежедневных академических задач.</p>
+                </div>
+
+                <div class="features-grid">
+                    <!-- Карточка 1 -->
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </div>
+                        <h3 class="feature-title">Планирование</h3>
+                        <ul class="feature-list">
+                            <li>Создание гибокго учебного плана</li>
+                            <li>Распределение задач по времени</li>
+                            <li>Приоритезация предметов</li>
+                        </ul>
+                    </article>
+
+                    <!-- Карточка 2 -->
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 1.5.5 2.8 1.3 3.8L4 22l6.2-2.5c.6.2 1.2.3 1.8.3a8 8 0 0 0 8-8 8 8 0 0 0-8-8z"></path><circle cx="12" cy="10" r="1"></circle></svg>
+                        </div>
+                        <h3 class="feature-title">Умный помощник</h3>
+                        <ul class="feature-list">
+                            <li>Помощь с учебными задачами</li>
+                            <li>Рекомендации по организации</li>
+                            <li>Авто-составление расписания</li>
+                        </ul>
+                    </article>
+
+                    <!-- Карточка 3 -->
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        </div>
+                        <h3 class="feature-title">Отслеживание прогресса</h3>
+                        <ul class="feature-list">
+                            <li>Наглядная статистика успеваемости</li>
+                            <li>Визуализация выполненных задач</li>
+                            <li>Аналитика затраченного времени</li>
+                        </ul>
+                    </article>
+
+                    <!-- Карточка 4 -->
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        </div>
+                        <h3 class="feature-title">Напоминания</h3>
+                        <ul class="feature-list">
+                            <li>Уведомления о важных задачах</li>
+                            <li>Строгий контроль дедлайнов</li>
+                            <li>Синхронизация с календарем</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           4. БЛОК «КАК ЭТО РАБОТАЕТ»
+           ========================================================================== -->
+        <section class="section how-it-works" id="how-it-works">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-badge">Простой процесс</span>
+                    <h2 class="section-title">4 шага к организованной учебе</h2>
+                    <p class="section-subtitle">Начать использовать StudyFlow проще, чем кажется. Пройдите простой путь к высокой успеваемости.</p>
+                </div>
+
+                <div class="steps-grid">
+                    <div class="steps-connector"></div>
+
+                    <!-- Шаг 1 -->
+                    <div class="step-card">
+                        <div class="step-number">01</div>
+                        <h3 class="step-title">Создай план</h3>
+                        <p class="step-desc">Студент добавляет свои учебные цели, предметы и текущие задачи в систему.</p>
+                    </div>
+
+                    <!-- Шаг 2 -->
+                    <div class="step-card">
+                        <div class="step-number">02</div>
+                        <h3 class="step-title">Организуй время</h3>
+                        <p class="step-desc">StudyFlow автоматически помогает грамотно распределить нагрузки по дням недели.</p>
+                    </div>
+
+                    <!-- Шаг 3 -->
+                    <div class="step-card">
+                        <div class="step-number">03</div>
+                        <h3 class="step-title">Выполняй задачи</h3>
+                        <p class="step-desc">Пользователь выполняет задания, отмечает их и фокусируется на главном.</p>
+                    </div>
+
+                    <!-- Шаг 4 -->
+                    <div class="step-card">
+                        <div class="step-number">04</div>
+                        <h3 class="step-title">Следи за результатом</h3>
+                        <p class="step-desc">Сервис наглядно показывает прогресс и помогает сохранять высокую мотивацию.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           5. БЛОК «ПРЕИМУЩЕСТВА»
+           ========================================================================== -->
+        <section class="section" id="advantages">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-badge">Почему мы</span>
+                    <h2 class="section-title">Преимущества StudyFlow</h2>
+                    <p class="section-subtitle">Создано студентами для студентов с учетом реальных потребностей учебного процесса.</p>
+                </div>
+
+                <!-- Блок со статистикой -->
+                <div class="advantages-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">студентов сдают задачи вовремя</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">доступ к учебному плану с любых устройств</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">1 место</div>
+                        <div class="stat-label">для абсолютно всех учебных дел</div>
+                    </div>
+                </div>
+
+                <!-- Дополнительный список преимуществ -->
+                <div class="advantages-list-grid">
+                    <div class="adv-item">
+                        <span class="adv-icon">✓</span>
+                        <span>Экономия до 5 часов в неделю</span>
+                    </div>
+                    <div class="adv-item">
+                        <span class="adv-icon">✓</span>
+                        <span>Удобная организация учебы</span>
+                    </div>
+                    <div class="adv-item">
+                        <span class="adv-icon">✓</span>
+                        <span>Полный контроль дедлайнов</span>
+                    </div>
+                    <div class="adv-item">
+                        <span class="adv-icon">✓</span>
+                        <span>Доступ с ПК и смартфона</span>
+                    </div>
+                    <div class="adv-item">
+                        <span class="adv-icon">✓</span>
+                        <span>Понятный и чистый интерфейс</span>
+                    </div>
+                    <div class="adv-item">
+                        <span class="adv-icon">✓</span>
+                        <span>Персонализированный подход</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           6. БЛОК С ОТЗЫВАМИ
+           ========================================================================== -->
+        <section class="section reviews" id="reviews">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-badge">Отзывы</span>
+                    <h2 class="section-title">Что говорят студенты</h2>
+                    <p class="section-subtitle">Истории успеха тех, кто уже перешел на новый уровень планирования учебы.</p>
+                </div>
+
+                <div class="reviews-grid">
+                    <!-- Отзыв 1 -->
+                    <article class="review-card">
+                        <p class="review-text">«StudyFlow помог мне перестать откладывать учебные задачи и нормально планировать неделю. Раньше всегда делала всё в последний момент, а теперь учусь спокойно.»</p>
+                        <div class="review-author">
+                            <div class="author-avatar">ЕА</div>
+                            <div class="author-info">
+                                <h4>Екатерина Алексеева</h4>
+                                <p>Информационные системы, 3 курс</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Отзыв 2 -->
+                    <article class="review-card">
+                        <p class="review-text">«Теперь все дедлайны и задания находятся в одном месте. Удобно, что сервис сам напоминает о важных контрольных. Больше ничего не забываю!»</p>
+                        <div class="review-author">
+                            <div class="author-avatar">МП</div>
+                            <div class="author-info">
+                                <h4>Михаил Петров</h4>
+                                <p>Экономика и финансы, 2 курс</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Отзыв 3 -->
+                    <article class="review-card">
+                        <p class="review-text">«Очень удобный сервис для студентов. Особенно нравится отслеживание прогресса — это реально мотивирует закрывать задачи вовремя и видеть свой результат.»</p>
+                        <div class="review-author">
+                            <div class="author-avatar">АС</div>
+                            <div class="author-info">
+                                <h4>Анна Смирнова</h4>
+                                <p>Дизайн интерфейсов, 4 курс</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           7. CTA-БЛОК (ПРИЗЫВ К ДЕЙСТВИЮ)
+           ========================================================================== -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-box">
+                    <h2 class="cta-title">Готов сделать учебу проще?</h2>
+                    <p class="cta-subtitle">Присоединяйся к тысячам студентов и начни использовать StudyFlow уже сегодня абсолютно бесплатно.</p>
+                    <button class="btn btn-primary js-start-btn">Начать бесплатно</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==========================================================================
+       8. FOOTER
+       ========================================================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Брендинг -->
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <div class="logo-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>
+                        <span>StudyFlow</span>
+                    </a>
+                    <p class="footer-desc">Цифровой сервис для студентов, который помогает организовывать учебный процесс, планировать задачи и учиться без стресса.</p>
+                </div>
+
+                <!-- Ссылки 1 -->
+                <div>
+                    <h4 class="footer-title">Навигация</h4>
+                    <div class="footer-links">
+                        <a href="#hero">Главная</a>
+                        <a href="#features">Возможности</a>
+                        <a href="#how-it-works">Как это работает</a>
+                        <a href="#advantages">Преимущества</a>
+                        <a href="#reviews">Отзывы</a>
+                    </div>
+                </div>
+
+                <!-- Ссылки 2 -->
+                <div>
+                    <h4 class="footer-title">Документы</h4>
+                    <div class="footer-links">
+                        <a href="#">Политика конфиденциальности</a>
+                        <a href="#">Условия использования</a>
+                        <a href="#">Поддержка</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Нижняя панель подвала -->
+            <div class="footer-bottom">
+                <p>&copy; 2026 StudyFlow. Все права защищены.</p>
+                <p>Разработано для эффективной учебы</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Уведомление (Toast) -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span id="toastMessage">Отлично! Регистрация в StudyFlow скоро будет доступна.</span>
+    </div>
+
+    <!-- ==========================================================================
+       9. JAVASCRIPT ИНТЕРАКТИВНОСТЬ
+       ========================================================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Переключение мобильного меню
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const navMenu = document.getElementById('navMenu');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            hamburgerBtn.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+
+            // Закрытие мобильного меню при клике на ссылку
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                });
+            });
+
+            // 2. Интерактивная обработка кнопок "Начать бесплатно" / "Попробовать бесплатно"
+            const startButtons = document.querySelectorAll('.js-start-btn');
+            const toast = document.getElementById('toast');
+            let toastTimeout;
+
+            startButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Показываем уведомление (Toast)
+                    toast.classList.add('show');
+
+                    // Автоматическое скрытие через 4 секунды
+                    clearTimeout(toastTimeout);
+                    toastTimeout = setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 4000);
+                });
+            });
+
+            // 3. Добавление эффекта тени для хедера при скролле
+            const header = document.querySelector('.header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.05)';
+                } else {
+                    header.style.boxShadow = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
