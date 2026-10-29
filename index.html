@@ -163,6 +163,12 @@
 		.review-person strong { display: block; font-size: .85rem; }
 		.review-person small { display: block; color: #8992a4; font-size: .74rem; }
 
+		/* Фотографии в разделах */
+		.photo-figure { margin: 0; }
+		.photo-figure img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 16px 40px rgba(34,43,85,.12); transition: transform .3s ease, box-shadow .3s ease; }
+		.photo-figure img:hover { transform: translateY(-4px); box-shadow: 0 22px 48px rgba(34,43,85,.15); }
+		.photo-caption { margin: 13px 0 0; color: var(--muted); font-size: .85rem; text-align: center; }
+
 		/* Форма регистрации / Контакты */
 		.signup-section { padding: 80px 0 100px; background: linear-gradient(180deg, #f5f6fb 0%, #fff 100%); }
 		.signup-container { max-width: 580px; margin: 0 auto; padding: 40px; background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); }
@@ -344,6 +350,10 @@
 					<article class="feature-card"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h17M8 15l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 6h3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Отслеживание прогресса</h3><p>Отмечай выполненное, наблюдай за результатами и замечай, как маленькие шаги складываются в успех.</p></article>
 					<article class="feature-card"><div class="icon-box"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Напоминания</h3><p>Не упускай важные задачи и держи дедлайны под контролем с мягкими своевременными напоминаниями.</p></article>
 				</div>
+				<figure class="photo-figure">
+					<img src="images/teamwork.jpg" alt="Студенты работают над учебным проектом в команде" loading="lazy">
+					<figcaption class="photo-caption">Командная работа над проектами — тоже часть эффективной учёбы</figcaption>
+				</figure>
 			</div>
 		</section>
 
@@ -357,6 +367,10 @@
 					<article class="step"><div class="step-num">03</div><h3>Выполняй задачи</h3><p>Отмечай задания по мере выполнения и освобождай место для новых идей.</p></article>
 					<article class="step"><div class="step-num">04</div><h3>Следи за результатом</h3><p>Смотри на свой прогресс и сохраняй мотивацию продолжать.</p></article>
 				</div>
+				<figure class="photo-figure">
+					<img src="images/planning.jpg" alt="Студент планирует учебные задачи на неделю" loading="lazy">
+					<figcaption class="photo-caption">Планирование задач — первый шаг к спокойной учебной неделе</figcaption>
+				</figure>
 			</div>
 		</section>
 
@@ -371,7 +385,11 @@
 					<article class="stat-card"><strong>24/7</strong><p>доступ к учебному плану</p></article>
 					<article class="stat-card"><strong>1 место</strong><p>для всех учебных задач</p></article>
 					<article class="stat-card"><strong>∞</strong><p>возможностей для новых целей</p></article>
-				</div><div class="demo-note">Показатели приведены для примера и не являются реальной статистикой.</div></div>
+				</div><div class="demo-note">Показатели приведены для примера и не являются реальной статистикой.</div>
+				<figure class="photo-figure">
+					<img src="images/study.jpg" alt="Студент занимается индивидуальной учёбой в спокойной обстановке" loading="lazy">
+					<figcaption class="photo-caption">Индивидуальная учёба — в своём темпе и без лишнего стресса</figcaption>
+				</figure></div>
 			</div>
 		</section>
 
