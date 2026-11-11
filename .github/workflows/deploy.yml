@@ -1,10 +1,9 @@
-# Workflow автоматической публикации статического сайта на GitHub Pages
 name: Deploy static site
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:        # позволяет запустить вручную кнопкой в Actions
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,27 +11,32 @@ permissions:
   id-token: write
 
 jobs:
+  # Задание 1: проверка качества HTML-кода
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lint HTML (HTMLHint)
+        run: npx --yes htmlhint "**/*.html"
+
+  # Задание 2: деплой только после успешной проверки
   deploy:
+    needs: lint
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Шаг 1. Скопировать файлы репозитория на виртуальную машину
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Шаг 2. Подготовить окружение GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
-      # Шаг 3. Упаковать файлы сайта в артефакт
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-
-      # Шаг 4. Опубликовать артефакт на GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
